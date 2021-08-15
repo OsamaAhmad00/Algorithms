@@ -85,7 +85,7 @@ ShortestPathsInfo dijkstra(const Graph &graph, int source, int target)
     // get rid of the part where it matches the closest node to
     // the target, or pass the target as a node that doesn't exits.
 
-    // This runs in O(E + log(v)) because we're using priority
+    // This runs in O((E + V) * log(V)) because we're using priority
     // queues. If an adjacency matrix is used instead, the order
     // of this function will be O(N^2).
     // Using priority queues doesn't only make it faster, but also
