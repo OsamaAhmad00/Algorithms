@@ -5,6 +5,18 @@
 
 const int MAX_VALUE = 1'000'000;
 
+struct NegativeCycleException : public std::exception
+{
+    int first_affected_node;
+
+    NegativeCycleException(int node = -1) :
+        first_affected_node(node), std::exception() {}
+
+    const char* what() const noexcept {
+        return "The graph contains a negative cycle.";
+    }
+};
+
 struct Edge
 {
     int to;
@@ -87,7 +99,7 @@ ShortestPathsInfo dijkstra(const Graph &graph, int source, int target)
 
     // This runs in O((E + V) * log(V)) because we're using priority
     // queues. If an adjacency matrix is used instead, the order
-    // of this function will be O(N^2).
+    // of this function will be O(V^2).
     // Using priority queues doesn't only make it faster, but also
     // allows for dynamically updating the graph (which the adjacency
     // matrix version doesn't allows). With that being said, the
@@ -105,6 +117,12 @@ ShortestPathsInfo dijkstra(const Graph &graph, int source, int target)
     // node with parent of -1 is the root of the shortest path tree.
     queue.push({.node=source, .parent=-1, .weight=0});
 
+    // This is used to detect negative cycles. If we enounter a node
+    // in the queue that is visited before AND we can reach it with
+    // less weight, then this node is in a cycle and the results won't
+    // be correct.
+    std::vector<bool> is_visited(graph.size(), false);
+
     // at each iteration, one shortest path will be calculated.
     // since the result is a tree, the maximum number of paths
     // from the root is n - 1. will iterate n - 1 times or until
@@ -118,12 +136,17 @@ ShortestPathsInfo dijkstra(const Graph &graph, int source, int target)
 
         int node = closest.node;
 
-        if (closest.weight >= shortest_distances[node]) {
-            continue;
+        if (is_visited[node]) {
+            if (closest.weight >= shortest_distances[node]) {
+                continue;
+            } else {
+                throw NegativeCycleException(node);
+            }
         }
 
         shortest_distances[node] = closest.weight;
         parent_of[node] = closest.parent;
+        is_visited[node] = true;
         i++;
 
         for (auto& edge : graph[node]) {
@@ -174,6 +197,19 @@ Graph get_sample_graph()
     add_child(graph, 3, 5, 3);
     add_child(graph, 4, 1, 5);
     add_child(graph, 5, 4, 2);
+
+    return graph;
+}
+
+Graph get_negative_cycle_grah()
+{
+    Graph graph(6);
+
+    add_child(graph, 1, 2, 5);
+    add_child(graph, 2, 3, 6);
+    add_child(graph, 3, 4, 4);
+    add_child(graph, 4, 5, 2);
+    add_child(graph, 5, 3, -11);
 
     return graph;
 }
@@ -251,8 +287,24 @@ void print_shortest_path_info(const Graph& graph, int source, int target)
     std::cout << std::endl;
 }
 
+void test_with_negative_cycle()
+{
+    std::cout << std::endl << std::endl;
+    std::cout << "Negative cycle exampe: " << std::endl;
+
+    auto negative_cycle_graph = get_negative_cycle_grah();
+    try {
+        print_shortest_paths_info(negative_cycle_graph, 1);
+    } catch (NegativeCycleException &e) {
+        std::cout << "\tNode " << e.first_affected_node
+            << " is affected by a negative cycle." << std::endl;
+    }
+}
+
 int main()
 {
     auto graph = get_sample_graph();
     print_shortest_paths_info(graph, 1);
+
+    test_with_negative_cycle();
 }
