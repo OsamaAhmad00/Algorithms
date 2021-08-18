@@ -61,9 +61,12 @@ ShortestPathInfo bellman_ford(const Graph &graph, int source)
     // not guaranteed).
 
     for (int x = 1; x <= 2; x++) {
-        for (int i = 0; i < V - 1; i++) {
-            for (auto &edge : graph.edges) {
+        for (int i = 0; i < V - 1; i++)
+        {
+            bool relaxed = false;
 
+            for (auto &edge : graph.edges)
+            {
                 int old_weight = minimum_distances[edge.to];
                 int new_weight = minimum_distances[edge.from] + edge.weight;
 
@@ -74,7 +77,13 @@ ShortestPathInfo bellman_ford(const Graph &graph, int source)
 
                     parent_of[edge.to] =
                             (x == 1) ? edge.from : -1;
+
+                    relaxed = true;
                 }
+            }
+
+            if (!relaxed) {
+                break;
             }
         }
     }
