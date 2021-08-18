@@ -3,8 +3,16 @@
 #include <cstring>
 #include <vector>
 
-// NOTE this code is not practical.
+// NOTE: this code is not practical.
 //  Yet, can be used to explain the idea.
+
+// NOTE: I couldn't write the Bellman-Ford
+//  algorithm as a recursive function.
+//  the algorithm has 3 different variables:
+//    - The number of the current pass (among the V - 1 passes)
+//    - The current edge
+//    - The minimum distance so far, which is
+//       indexed using the node the edge is going to
 
 const int MAX_VAL = 1'000'000;
 
