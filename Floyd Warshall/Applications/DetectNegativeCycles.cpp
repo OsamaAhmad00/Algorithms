@@ -8,7 +8,7 @@ int answers[n+1][n+1];
 
 const int MAX_VAL = 1'000'000;
 
-bool is_node_in_a_cycle(int x)
+bool is_node_in_a_negative_cycle(int x)
 {
     return distances[x][x] < 0;
 }
@@ -18,10 +18,10 @@ bool there_exists_a_path(int i, int j)
     return distances[i][j] != MAX_VAL;
 }
 
-bool does_graph_contain_cycles()
+bool does_graph_contain_negative_cycles()
 {
     for (int x = 1; x <= n; x++) {
-        if (is_node_in_a_cycle(x)) {
+        if (is_node_in_a_negative_cycle(x)) {
             return true;
         }
     }
@@ -29,10 +29,10 @@ bool does_graph_contain_cycles()
     return false;
 }
 
-bool is_path_affected_by_a_cycle(int i, int j)
+bool is_path_affected_by_negative_cycle(int i, int j)
 {
     for (int k = 1; k <= n; k++) {
-        bool is_affected = is_node_in_a_cycle(k) &&
+        bool is_affected = is_node_in_a_negative_cycle(k) &&
                            there_exists_a_path(i, k) &&
                            there_exists_a_path(k, j);
         if (is_affected) {
@@ -94,6 +94,6 @@ int main()
 {
     set_distances();
     calc_min_paths();
-    std::cout << is_path_affected_by_a_cycle(2, 3) << std::endl;
-    std::cout << does_graph_contain_cycles() << std::endl;
+    std::cout << is_path_affected_by_a_negative_cycle(2, 3) << std::endl;
+    std::cout << does_graph_contain_negative_cycles() << std::endl;
 }
