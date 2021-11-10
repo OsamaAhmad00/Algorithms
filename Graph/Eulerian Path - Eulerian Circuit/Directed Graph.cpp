@@ -145,12 +145,15 @@ std::vector<int> get_eulerian_path(const Graph& graph)
     auto indegree = get_indegree(graph);
 
     int start_node = -1;
-    for (int i = 0; i < n; i++) {
-        if (!graph[i].empty()) {
-            if ((start_node == -1 && !graph[i].empty()) || indegree[i] - graph[i].size() == 1) {
-                start_node = i;
-            }
-        }
+    for (int i = 0; i < n; i++)
+    {
+        if (graph[i].empty())
+            continue;
+
+        start_node = i;
+
+        if (indegree[i] - graph[i].size() == 1)
+            break;
     }
 
     std::vector<int> last_index(n, 0);

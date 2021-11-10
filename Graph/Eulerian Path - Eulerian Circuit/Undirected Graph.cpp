@@ -106,12 +106,15 @@ std::vector<int> get_eulerian_path(const Graph& graph)
     edge_count /= 2;
 
     int start_node = -1;
-    for (int i = 0; i < n; i++) {
-        if (!graph[i].empty()) {
-            if ((start_node == -1 && !graph[i].empty()) || graph[i].size() % 2 == 1) {
-                start_node = i;
-            }
-        }
+    for (int i = 0; i < n; i++)
+    {
+        if (graph[i].empty())
+            continue;
+
+        start_node = i;
+
+        if (graph[i].size() % 2 == 1)
+            break;
     }
 
     std::vector<int> last_index(n, 0);
