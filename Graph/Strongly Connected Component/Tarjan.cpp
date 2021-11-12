@@ -7,7 +7,7 @@ const int UNVISITED = -1;
 typedef std::vector<std::vector<int>> Graph;
 
 // The returned components are sorted in a reverse topological order.
-std::vector<std::vector<int>> get_SCC(const Graph& graph)
+std::vector<std::vector<int>> get_SCCs(const Graph& graph)
 {
     std::vector<std::vector<int>> result;
 
@@ -101,8 +101,10 @@ Graph get_sample_graph_2()
     return result;
 }
 
-void test(const std::vector<std::vector<int>> &components)
+void test(const Graph& graph)
 {
+    auto components = get_SCCs(graph);
+    std::cout << "Components sorted in a reverse topological order:" << std::endl;
     for (int i = 0; i < components.size(); i++) {
         std::cout << "Component " << i+1 << ": ";
         for (int node : components[i]) {
@@ -115,6 +117,6 @@ void test(const std::vector<std::vector<int>> &components)
 
 int main()
 {
-    test(get_SCC(get_sample_graph_1()));
-    test(get_SCC(get_sample_graph_2()));
+    test(get_sample_graph_1());
+    test(get_sample_graph_2());
 }
