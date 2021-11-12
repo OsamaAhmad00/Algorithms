@@ -6,6 +6,7 @@
 const int UNVISITED = -1;
 typedef std::vector<std::vector<int>> Graph;
 
+// The returned components are sorted in a reverse topological order.
 std::vector<std::vector<int>> get_SCC(const Graph& graph)
 {
     std::vector<std::vector<int>> result;
