@@ -98,12 +98,7 @@ class MaxFlowCalculator
         return result;
     }
 
-public:
-
-    MaxFlowCalculator(const Graph& graph) : flow_graph(graph),
-        visited(graph.size(), false), residual_graph({}) {}
-
-    std::vector<Edge> get_max_flow(int source, int sink)
+    void calc_residual_graph(int source, int sink)
     {
         // The algorithm:
         // 1 - total_flow = 0
@@ -143,9 +138,28 @@ public:
         // This way, since we've taken more from the source, we've increased the total
         // flow by some amount, which is the bottleneck of the augmenting path.
 
+        // This also calculates the Minimum Cut of the graph. The reason is that, if
+        // you think about it, the maximum flow will be bounded by any cut on the graph.
+        // And since the max flow <= every single cut value, only the minimum cut can only
+        // be equal to the max flow.
+
+        // This code has an O(|E| * F) where |E| is the number of edges and F is
+        // the maximum flow. This is dependent on the value of the flow, we'd love
+        // to change the runtime complexity so that it's irrelevant of the max flow.
+
         residual_graph = flow_graph;
         this->sink = sink;
         while (add_augmenting_path(source) != 0);
+    }
+
+public:
+
+    MaxFlowCalculator(const Graph& graph) : flow_graph(graph),
+        visited(graph.size(), false), residual_graph({}) {}
+
+    std::vector<Edge> get_max_flow(int source, int sink)
+    {
+        calc_residual_graph(source, sink);
         return get_flow_edges();
     }
 };
