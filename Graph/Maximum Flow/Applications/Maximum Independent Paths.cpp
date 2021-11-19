@@ -96,7 +96,7 @@ class MaxFlowCalculator
         return result;
     }
 
-    void calc_residual_graph(int source, int sink)
+    void compute_residual_graph(int source, int sink)
     {
         residual_graph = flow_graph;
         this->sink = sink;
@@ -111,7 +111,7 @@ public:
     std::vector<Edge> get_max_flow(int source, int sink)
     {
         // Ford Fulkerson
-        calc_residual_graph(source, sink);
+        compute_residual_graph(source, sink);
         return get_flow_edges();
     }
 };

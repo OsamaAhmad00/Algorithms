@@ -64,7 +64,7 @@ class MinCutCalculator
         return result;
     };
 
-    void calc_residual_graph(int source, int sink)
+    void compute_residual_graph(int source, int sink)
     {
         // Ford Fulkerson
         residual_graph = flow_graph;
@@ -145,7 +145,7 @@ public:
         // sum of their values = the maximum flow. They're also the first
         // bottlenecks to encounter in the paths from the source to the sink.
 
-        calc_residual_graph(source, sink);
+        compute_residual_graph(source, sink);
         mark_reachable_edges(source);
         return get_min_cut_edges();
     }

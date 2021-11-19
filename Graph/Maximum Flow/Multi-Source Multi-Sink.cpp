@@ -96,7 +96,7 @@ class MaxFlowCalculator
         return result;
     }
 
-    void calc_residual_graph(const std::vector<int>& sources, const std::vector<int>& sinks)
+    void compute_residual_graph(const std::vector<int>& sources, const std::vector<int>& sinks)
     {
         residual_graph = flow_graph;
 
@@ -136,7 +136,7 @@ public:
 
     std::vector<Edge> get_max_flow(const std::vector<int>& sources, const std::vector<int>& sinks)
     {
-        calc_residual_graph(sources, sinks);
+        compute_residual_graph(sources, sinks);
         return get_flow_edges();
     }
 };
