@@ -54,7 +54,7 @@ class MaxFlowCalculator
 
     int add_augmenting_path(int from, int bottleneck = INT_MAX)
     {
-        if (from == sink) {
+        if (bottleneck == 0 || from == sink) {
             return bottleneck;
         }
 
@@ -74,7 +74,6 @@ class MaxFlowCalculator
             }
         }
 
-        visited[from] = false;
         return result;
     };
 
@@ -108,7 +107,11 @@ class MaxFlowCalculator
         for (int s : sources) add_source(s);
         for (int s : sinks  ) add_sink(s);
 
-        while (add_augmenting_path(source) != 0);
+        int bottleneck = -1;
+        while (bottleneck != 0) {
+            std::fill(visited.begin(), visited.end(), false);
+            bottleneck = add_augmenting_path(source);
+        }
     }
 
     void calc_weights_sum()

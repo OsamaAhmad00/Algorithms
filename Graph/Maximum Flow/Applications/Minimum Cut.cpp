@@ -40,7 +40,7 @@ class MinCutCalculator
 
     int add_augmenting_path(int from, int bottleneck = INT_MAX)
     {
-        if (from == sink) {
+        if (bottleneck == 0 || from == sink) {
             return bottleneck;
         }
 
@@ -60,7 +60,6 @@ class MinCutCalculator
             }
         }
 
-        visited[from] = false;
         return result;
     };
 
@@ -69,7 +68,11 @@ class MinCutCalculator
         // Ford Fulkerson
         residual_graph = flow_graph;
         this->sink = sink;
-        while (add_augmenting_path(source) != 0);
+        int bottleneck = -1;
+        while (bottleneck != 0) {
+            std::fill(visited.begin(), visited.end(), false);
+            bottleneck = add_augmenting_path(source);
+        }
     }
 
     void mark_reachable_edges(int from)

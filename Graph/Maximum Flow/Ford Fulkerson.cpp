@@ -58,7 +58,7 @@ class MaxFlowCalculator
 
     int add_augmenting_path(int from, int bottleneck = INT_MAX)
     {
-        if (from == sink) {
+        if (bottleneck == 0 || from == sink) {
             return bottleneck;
         }
 
@@ -78,7 +78,6 @@ class MaxFlowCalculator
             }
         }
 
-        visited[from] = false;
         return result;
     };
 
@@ -149,13 +148,17 @@ class MaxFlowCalculator
 
         residual_graph = flow_graph;
         this->sink = sink;
-        while (add_augmenting_path(source) != 0);
+        int bottleneck = -1;
+        while (bottleneck != 0) {
+            std::fill(visited.begin(), visited.end(), false);
+            bottleneck = add_augmenting_path(source);
+        }
     }
 
 public:
 
     MaxFlowCalculator(const Graph& graph) : flow_graph(graph),
-        visited(graph.size(), false), residual_graph({}) {}
+        visited(graph.size()), residual_graph({}) {}
 
     std::vector<Edge> get_max_flow(int source, int sink)
     {
