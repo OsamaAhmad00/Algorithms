@@ -105,6 +105,9 @@ public:
     // multi-source multi-sink max flow solver
     // that allows edges to have only a weight of 1.
 
+    // Let A and B be the two sets of the bipartite graph.
+    // For an edge e, e.from is considered to be a node in set A
+    // and e.to will be considered as a node in set B.
     MaximumBipartiteMatchingCalculator(int n, std::vector<Edge>  edges)
         : n(n), edges(std::move(edges)), residual_graph({})
     {
