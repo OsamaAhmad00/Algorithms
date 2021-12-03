@@ -49,7 +49,7 @@ void calc_min_paths()
     }
 }
 
-void print_path(int i, int j, bool first_call = true)
+void print_path(int i, int j)
 {
     while (i != j) {
         std::cout << i << " -> ";
