@@ -45,7 +45,7 @@ class SuffixArray
 
     int n;
     int current_shift_length;
-    std::vector<int> old_orders;
+    std::vector<int> old_ranks;
     std::vector<CyclicShift> shifts;
     std::vector<int> suffix_array;
 
@@ -73,7 +73,7 @@ class SuffixArray
         return (index - current_shift_length * steps + n) % n;
     }
 
-    void set_new_orders()
+    void set_new_ranks()
     {
         shifts[0].rank = 0;
         for (int i = 1; i < n; i++)
@@ -83,14 +83,14 @@ class SuffixArray
             int curr = shifts[i  ].start_index;
             int prev = shifts[i-1].start_index;
 
-            bool different_first_half = old_orders[curr] != old_orders[prev];
+            bool different_first_half = old_ranks[curr] != old_ranks[prev];
             bool different_second_half = false;
 
             if (!different_first_half) {
                 int curr_shifted = shifted_index(curr, -1);
                 int prev_shifted = shifted_index(prev, -1);
-                int a = old_orders[curr_shifted];
-                int b = old_orders[prev_shifted];
+                int a = old_ranks[curr_shifted];
+                int b = old_ranks[prev_shifted];
                 different_second_half = (a != b);
             }
 
@@ -100,36 +100,41 @@ class SuffixArray
         }
     }
 
-    void set_old_orders()
+    void set_old_ranks()
     {
         for (CyclicShift& shift : shifts)
-            old_orders[shift.start_index] = shift.rank;
+            old_ranks[shift.start_index] = shift.rank;
     }
 
     void shift()
     {
         for (CyclicShift& shift: shifts) {
             shift.start_index = shifted_index(shift.start_index);
-            shift.rank = old_orders[shift.start_index];
+            shift.rank = old_ranks[shift.start_index];
         }
 
         shifts = stable_sort(shifts);
 
-        set_new_orders();
+        set_new_ranks();
     }
 
     void double_shift_length()
     {
-        set_old_orders();
+        set_old_ranks();
         shift();
         current_shift_length *= 2;
+    }
+
+    bool is_done()
+    {
+        return shifts.back().rank == (n - 1);
     }
 
     void compute_suffix_array(const std::string& string)
     {
         initialize_shifts(string);
 
-        while (current_shift_length < n)
+        while (!is_done())
             double_shift_length();
 
         for (int i = 1; i < n; i++)
@@ -139,7 +144,7 @@ class SuffixArray
 public:
 
     explicit SuffixArray(const std::string& string) : n(string.size() + 1),
-                                                      current_shift_length(1), shifts(n), old_orders(n), suffix_array(n - 1)
+        current_shift_length(1), shifts(n), old_ranks(n), suffix_array(n - 1)
     {
         compute_suffix_array(string);
     }
