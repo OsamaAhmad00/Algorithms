@@ -236,9 +236,12 @@ class SuffixArray
 
     void compute_suffix_array(const std::string& string)
     {
+        // Let c = a character that is lexicographically
+        //  smaller than any character in the string.
         // Fact: the array of the start indices of sorted
         //  suffices = the array of the shift amounts of
-        //  sorted cyclic shifts.
+        //  sorted cyclic shifts of the string with c
+        //  appended to it.
         // We know how to compute the array of sorted cyclic
         //  shifts. Utilizing the fact above, we can just
         //  compute the sorted cyclic shifts array.
