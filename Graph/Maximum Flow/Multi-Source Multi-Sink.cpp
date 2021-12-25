@@ -31,9 +31,12 @@ public:
     {
         std::vector<std::vector<int>>::resize(size);
         weights.resize(size);
-        for (auto& x : weights) {
+
+        for (auto& x : *this)
             x.resize(size, 0);
-        }
+
+        for (auto& x : weights)
+            x.resize(size, 0);
     }
 };
 
@@ -125,10 +128,14 @@ class MaxFlowCalculator
     }
 
     void add_source(int node) {
+        // TODO add a way to specify maximum output from
+        //  the source instead of always assigning weight_sum.
         residual_graph.add_weight(source, node, weights_sum);
     }
 
     void add_sink(int node) {
+        // TODO add a way to specify maximum input to
+        //  the sink instead of always assigning weight_sum.
         residual_graph.add_weight(node, sink, weights_sum);
     }
 
