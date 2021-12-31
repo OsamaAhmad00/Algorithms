@@ -92,10 +92,10 @@ class LowestCommonAncestor
 
 public:
 
-    int get_LCA(int _i, int _j)
+    int get_LCA(int node1, int node2)
     {
-        i = _i;
-        j = _j;
+        i = node1;
+        j = node2;
         if (depths[i] > depths[j])
             std::swap(i, j);
 
