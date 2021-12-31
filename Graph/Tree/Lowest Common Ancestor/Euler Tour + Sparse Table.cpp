@@ -259,7 +259,7 @@ public:
     }
 };
 
-void test(const Tree& tree, int root, std::vector<std::pair<int, int>> queries)
+void test(const Tree& tree, int root, const std::vector<std::pair<int, int>>& queries)
 {
     LowestCommonAncestor lca(tree, root);
     for (auto& query : queries)
