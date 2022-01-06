@@ -6,6 +6,9 @@
 #include <functional>
 #include <algorithm>
 
+// TODO The code for finding the centers is improved (in
+//  its own file), but this code is not. Improve this code.
+
 struct Edge
 {
     int to;
