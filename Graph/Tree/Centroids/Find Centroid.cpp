@@ -22,14 +22,18 @@ class CentroidFinder
 
     int find_centroid(int node, int parent = -1)
     {
-        // A node is a centroid if the size of all its
-        //  children has a size <= floor(tree.size() / 2).
+        // The centroid is a node, upon removing it from the
+        //  tree, the size of all remaining components will be
+        //  <= floor(tree.size() / 2).
+        // Another way to think of it: The centroid is the node
+        //  that if became the root, the subtree_size of all its
+        //  children will be <= floor(tree.size() / 2).
         // For a given node, if we can find a child with
         //  subtree_size > tree.size() / 2, then this node
         //  is not a centroid.
-        // If we have a child that has a subtree_size > tree.size() / 2,
+        // If we have a child with subtree_size > tree.size() / 2,
         //  then the centroid can only be in its subtree. We don't
-        //  need to search for the centroid in the subtrees of all
+        //  need to search for the centroid in the subtrees other
         //  children, just the one with the biggest subtree size.
         // To make sure that this node is a centroid, we should also make
         //  sure that tree.size() - subtree_size[node] <= tree.size() / 2.
@@ -40,6 +44,22 @@ class CentroidFinder
         //  this means that it has a subtree_size > tree.size() / 2, which
         //  means that the number of all nodes outside this subtree will
         //  be <= tree.size() / 2.
+        // Every tree has at least one centroid (and at most 2).
+        //  Proof: if the current node is a centroid, we're done.
+        //  If it's not a centroid, then that means that is has a child
+        //  with subtree_size > tree.size() / 2 (that contains the centroid).
+        //  Fact 1: subtree_size[child] <= subtree_size[parent] - 1. This is because
+        //   when we move to a child, the subtree_size decreases by at least 1.
+        //  Fact 2: the number of nodes that are outside the subtree of the child
+        //   is <= tree.size() / 2 (this is explained above).
+        //  Using facts 1 and 2, we can see that by entering children with
+        //  subtree_size > tree.size() / 2 over and over, the subtree_size
+        //  keeps decreasing, and the number of nodes outside the current
+        //  subtree is guaranteed to remain <= tree.size() / 2, and since the
+        //  subtree_size is not infinite (we can't decrease it forever), at
+        //  some point, we'll have to enter the centroid, which has subtree_size
+        //  of all children <= tree.size() / 2, and the number of nodes outsize
+        //  of its subtree <= tree.size() / 2.
 
         for (int child : tree[node])
         {
