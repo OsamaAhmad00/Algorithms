@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <queue>
 
 typedef std::vector<std::vector<int>> Tree;
 
@@ -16,30 +15,30 @@ void add_edge(Tree& tree, int parent, int child)
     tree[child].push_back(parent);
 }
 
-class CentroidDecomposition
-{
-    const Tree& tree;
+class CentroidDecomposition {
+    const Tree &tree;
 
     int root;
     Tree centroid_decomposition;
     std::vector<bool> is_blocked;
     std::vector<int> subtree_size;
-    std::queue<int> current_centroids;
 
     void calc_subtree_size(int node, int parent = -1)
     {
         subtree_size[node] = 1;
-        for (int child : tree[node]) {
-            if (!is_blocked[child] && child != parent) {
-                calc_subtree_size(child, node);
-                subtree_size[node] += subtree_size[child];
-            }
+        for (int child: tree[node])
+        {
+            if (is_blocked[child] || child == parent)
+                continue;
+
+            calc_subtree_size(child, node);
+            subtree_size[node] += subtree_size[child];
         }
     }
 
     int find_centroid(int node, int tree_size, int parent = -1)
     {
-        for (int child : tree[node])
+        for (int child: tree[node])
         {
             if (is_blocked[child] || child == parent)
                 continue;
@@ -51,48 +50,26 @@ class CentroidDecomposition
         return node;
     }
 
-    void init_root_centroid()
+    void add_edge(int parent, int child)
     {
-        std::fill(is_blocked.begin(), is_blocked.end(), false);
-
-        const int initial_root = 0;
-        calc_subtree_size(initial_root);
-        root = find_centroid(initial_root, tree.size());
-        current_centroids.push(root);
-        is_blocked[root] = true;
+        if (parent == -1)
+            root = child;
+        else
+            ::add_edge(centroid_decomposition, parent, child);
     }
 
-    void process_next_centroid()
+    void construct_centroid_decomposition(int node, int parent_centroid = -1)
     {
-        int centroid = current_centroids.front();
-        current_centroids.pop();
+        if (is_blocked[node]) return;
 
-        for (int child : tree[centroid]) {
-            if (!is_blocked[child])
-            {
-                // We don't need to precompute the sizes
-                // of all subtrees beforehand, we can just
-                // calculate the size for each subtree right
-                // before starting to process it.
-                calc_subtree_size(child);
+        calc_subtree_size(node);
 
-                int child_centroid = find_centroid(child, subtree_size[child]);
-                add_edge(centroid_decomposition, centroid, child_centroid);
-                current_centroids.push(child_centroid);
-                is_blocked[child_centroid] = true;
-            }
-        }
-    }
+        int centroid = find_centroid(node, subtree_size[node]);
+        add_edge(parent_centroid, centroid);
+        is_blocked[centroid] = true;
 
-    void construct_centroid_decomposition()
-    {
-        init_root_centroid();
-
-        // We need to use a queue when processing the centroids
-        // to ensure that higher level centroids (with smaller
-        // depths) get processed before the lower level centroids.
-        while (!current_centroids.empty())
-            process_next_centroid();
+        for (int child : tree[centroid])
+            construct_centroid_decomposition(child, centroid);
     }
 
 public:
@@ -137,12 +114,13 @@ public:
         tree(tree),
         subtree_size(tree.size()),
         centroid_decomposition(tree.size()),
-        is_blocked(tree.size())
+        is_blocked(tree.size(), false)
     {}
 
     RootedTree get_centroid_decomposition()
     {
-        construct_centroid_decomposition();
+        int node = 0; // The node here doesn't matter.
+        construct_centroid_decomposition(node);
         return {root, std::move(centroid_decomposition)};
     }
 };
