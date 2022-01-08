@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <queue>
 
 const int MAX_VALUE = 1'000'000;
 
@@ -25,30 +24,30 @@ void add_edge(Tree& tree, int parent, int child)
     tree[child].push_back(parent);
 }
 
-class CentroidDecomposition
-{
-    const Tree& tree;
+class CentroidDecomposition {
+    const Tree &tree;
 
     int root;
     Tree centroid_decomposition;
     std::vector<bool> is_blocked;
     std::vector<int> subtree_size;
-    std::queue<int> current_centroids;
 
     void calc_subtree_size(int node, int parent = -1)
     {
         subtree_size[node] = 1;
-        for (int child : tree[node]) {
-            if (!is_blocked[child] && child != parent) {
-                calc_subtree_size(child, node);
-                subtree_size[node] += subtree_size[child];
-            }
+        for (int child: tree[node])
+        {
+            if (is_blocked[child] || child == parent)
+                continue;
+
+            calc_subtree_size(child, node);
+            subtree_size[node] += subtree_size[child];
         }
     }
 
     int find_centroid(int node, int tree_size, int parent = -1)
     {
-        for (int child : tree[node])
+        for (int child: tree[node])
         {
             if (is_blocked[child] || child == parent)
                 continue;
@@ -60,58 +59,81 @@ class CentroidDecomposition
         return node;
     }
 
-    void init_root_centroid()
+    void add_edge(int parent, int child)
     {
-        std::fill(is_blocked.begin(), is_blocked.end(), false);
-
-        const int initial_root = 0;
-        calc_subtree_size(initial_root);
-        root = find_centroid(initial_root, tree.size());
-        current_centroids.push(root);
-        is_blocked[root] = true;
+        if (parent == -1)
+            root = child;
+        else
+            ::add_edge(centroid_decomposition, parent, child);
     }
 
-    void process_next_centroid()
+    void construct_centroid_decomposition(int node, int parent_centroid = -1)
     {
-        int centroid = current_centroids.front();
-        current_centroids.pop();
+        if (is_blocked[node]) return;
 
-        for (int child : tree[centroid]) {
-            if (!is_blocked[child])
-            {
-                calc_subtree_size(child);
+        calc_subtree_size(node);
 
-                int child_centroid = find_centroid(child, subtree_size[child]);
-                add_edge(centroid_decomposition, centroid, child_centroid);
-                current_centroids.push(child_centroid);
-                is_blocked[child_centroid] = true;
-            }
-        }
-    }
+        int centroid = find_centroid(node, subtree_size[node]);
+        add_edge(parent_centroid, centroid);
+        is_blocked[centroid] = true;
 
-    void construct_centroid_decomposition()
-    {
-        init_root_centroid();
-
-        while (!current_centroids.empty())
-            process_next_centroid();
+        for (int child : tree[centroid])
+            construct_centroid_decomposition(child, centroid);
     }
 
 public:
+
+    // Properties of a Centroid Decomposition Tree:
+    // 1 - Its height is O(log(n)), which means that the
+    //      height of its longest branch is O(log(n)).
+    //      This is because each time you set the root of
+    //      the subtree to be the centroid, you make the size
+    //      of children <= subtree_size / 2, and you can do that
+    //      at most O(log(n)) times.
+    // 2 - Each subtree in the centroid decomposition tree forms a connected
+    //      component in the original tree. This is because of our process of
+    //      construction: for every node, when it's added to the centroid
+    //      decomposition tree, it's part of some connected subtree that hasn't
+    //      been removed yet. Once we remove that node, every node in that subtree
+    //      will be added as a child of that node, and thus all of its children
+    //      in the centroid decomposition tree will be part of that connected subtree.
+    // 3 - For any node x:
+    //       let A = ancestors of x in the centroid decomposition tree.
+    //       let T = The connected component that represents the subtree of
+    //        x in the centroid decomposition tree.
+    //      Every adjacent node to T (but not part of T) will be in the set A, in other
+    //      words, Every adjacent node to T will be an ancestor of x in the centroid
+    //      decomposition tree. This doesn't go the other way, not every node in A will
+    //      is adjacent to T.
+    //      This is a corollary of property number 2.
+    //      Consider a node y that is adjacent to T, but not part of T, since y is adjacent
+    //      to T, this means that it should be part of T. The only way for it to be connected
+    //      to T, yet not a part of T is by being a higher level centroid (an ancestor of the
+    //      nodes in T)
+    //      Another way to think about it:
+    //      Since a subtree in the centroid decomposition tree forms a connected component in
+    //      the original tree, node y, that is adjacent to T can be one of two things:
+    //       - Part of T, in which case, it'll be a part of the subtree represented by T in
+    //         the centroid decomposition tree.
+    //       - Not a part of T (which is the case), in which case, it'll not be a child of the
+    //         subtree represented by T, but it should still be connected to the subtree, and
+    //         the only way that this is possible is to be an ancestor of T.
 
     CentroidDecomposition(const Tree& tree) :
             tree(tree),
             subtree_size(tree.size()),
             centroid_decomposition(tree.size()),
-            is_blocked(tree.size())
+            is_blocked(tree.size(), false)
     {}
 
     RootedTree get_centroid_decomposition()
     {
-        construct_centroid_decomposition();
+        int node = 0; // The node here doesn't matter.
+        construct_centroid_decomposition(node);
         return {root, std::move(centroid_decomposition)};
     }
 };
+
 
 class LowestCommonAncestor
 {
