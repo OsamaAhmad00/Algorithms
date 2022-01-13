@@ -32,7 +32,7 @@ struct ShortestPathsInfo
     // Dijkstra's algorithm constructs a
     // shortest path tree with the root being
     // the source node. to construct any path
-    // (or the entire tree). Thus you only need
+    // (or the entire tree). Thus, you only need
     // to know the parent of each node in the tree
     // to be able to construct the tree.
     std::vector<int> parent_of;
@@ -48,10 +48,6 @@ struct QueueFrame
     int node;
     int parent;
     int weight;
-
-    bool operator<(const QueueFrame &other) const {
-        return weight < other.weight;
-    }
 
     bool operator>(const QueueFrame &other) const {
         return weight > other.weight;
@@ -102,7 +98,7 @@ ShortestPathsInfo dijkstra(const Graph &graph, int source, int target)
     // of this function will be O(V^2).
     // Using priority queues doesn't only make it faster, but also
     // allows for dynamically updating the graph (which the adjacency
-    // matrix version doesn't allows). With that being said, the
+    // matrix version doesn't allow). With that being said, the
     // adjacency matrix version is simpler.
 
     ShortestPathsInfo result(graph.size());
@@ -114,21 +110,21 @@ ShortestPathsInfo dijkstra(const Graph &graph, int source, int target)
     //  and use a normal priority queue, but this is cleaner.
     std::priority_queue<QueueFrame, std::vector<QueueFrame>, std::greater<QueueFrame>> queue;
 
-    // node with parent of -1 is the root of the shortest path tree.
+    // Node with parent of -1 is the root of the shortest path tree.
     queue.push({.node=source, .parent=-1, .weight=0});
 
-    // This is used to detect negative cycles. If we enounter a node
+    // This is used to detect negative cycles. If we encounter a node
     // in the queue that is visited before AND we can reach it with
     // less weight, then this node is in a cycle and the results won't
     // be correct.
     std::vector<bool> is_visited(graph.size(), false);
 
-    // at each iteration, one shortest path will be calculated.
-    // since the result is a tree, the maximum number of paths
+    // At each iteration, one shortest path will be calculated.
+    // Since the result is a tree, the maximum number of paths
     // from the root is n - 1. will iterate n - 1 times or until
     // the queue gets empty (in case not all nodes are connected).
-    // i is not being updated here. will be updated when an
-    // a shortest path gets updated.
+    // i is not being updated here, will be updated when a shortest
+    // path gets updated.
     for (int i = 0; i < graph.size() - 1 && !queue.empty();)
     {
         auto closest = queue.top();
@@ -201,7 +197,7 @@ Graph get_sample_graph()
     return graph;
 }
 
-Graph get_negative_cycle_grah()
+Graph get_negative_cycle_graph()
 {
     Graph graph(6);
 
@@ -234,7 +230,7 @@ void print_shortest_paths_info(const Graph& graph, int source)
         }
         else
         {
-            std::cout << "Sortest path from " << source << " to " << i
+            std::cout << "Shortest path from " << source << " to " << i
                       << " costs " << info.shortest_distances[i] << "." << std::endl;
         }
     }
@@ -290,9 +286,9 @@ void print_shortest_path_info(const Graph& graph, int source, int target)
 void test_with_negative_cycle()
 {
     std::cout << std::endl << std::endl;
-    std::cout << "Negative cycle exampe: " << std::endl;
+    std::cout << "Negative cycle example: " << std::endl;
 
-    auto negative_cycle_graph = get_negative_cycle_grah();
+    auto negative_cycle_graph = get_negative_cycle_graph();
     try {
         print_shortest_paths_info(negative_cycle_graph, 1);
     } catch (NegativeCycleException &e) {
