@@ -2,13 +2,16 @@
 #include <cmath>
 
 template <typename T, typename U>
-T fast_power(const T& number, const U& power)
+T fast_power(T number, U power)
 {
-    if (power <= 0) return 1;
-    T result = fast_power(number, power / 2);
-    result *= result;
-    if (power % 2 != 0)
-        result *= number;
+    T result = 1;
+    while (power > 0)
+    {
+        if (power % 2 != 0)
+            result *= number;
+        number = number * number;
+        power /= 2;
+    }
     return result;
 }
 
@@ -18,7 +21,7 @@ void test(long long n, unsigned int power)
     long long correct = std::pow(n, power);
 
     if (result != correct)
-        std::cout << "The result is not correct for n = " << n << std::endl;
+        std::cout << "The result is not correct for " << n << "^" << power << std::endl;
 
     std::cout << n << "^" << power << " = " << result << std::endl;
 }
