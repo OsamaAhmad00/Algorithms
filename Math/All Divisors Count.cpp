@@ -51,9 +51,25 @@ unsigned long long all_divisors_count(const T& number)
     return result;
 }
 
+template <typename T>
+unsigned long long all_divisors_count_of_power(const T& number, unsigned int power)
+{
+    unsigned long long result = 1;
+    for (auto& x : prime_factorization(number))
+        result *= (x.power * power + 1);
+    return result;
+}
+
 void test(int number)
 {
-    std::cout << "The number " << number << " has " << all_divisors_count(number) << " divisors." << std::endl;
+    std::cout << "The number " << number << " has "
+              << all_divisors_count(number) << " divisors." << std::endl;
+}
+
+void test_divisors_of_power(int number, int power)
+{
+    std::cout << "The number " << number << "^" << power << " has "
+        << all_divisors_count_of_power(number, power) << " divisors." << std::endl;
 }
 
 int main()
@@ -61,4 +77,8 @@ int main()
     test(10);
     test(1230);
     test(9930);
+
+    test_divisors_of_power(10, 5);
+    test_divisors_of_power(1230, 3);
+    test_divisors_of_power(9930, 3);
 }
