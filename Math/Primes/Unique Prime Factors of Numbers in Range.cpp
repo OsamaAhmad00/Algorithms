@@ -38,6 +38,7 @@ std::vector<std::vector<T>> get_unique_prime_factors_of_range(size_t upperbound)
 
     return prime_factors;
 }
+
 template <typename T>
 struct Power
 {
@@ -104,7 +105,7 @@ void test(int upperbound)
 {
     validate<int>(upperbound);
     auto result = get_unique_prime_factors_of_range<int>(upperbound);
-    std::cout << "Prime factors of the number from 2 to " << upperbound << " are:" << std::endl;
+    std::cout << "Prime factors of the numbers from 2 to " << upperbound << " are:" << std::endl;
     for (int num = 2; num < result.size(); num++) {
         std::cout << num << ": ";
         for (int factor : result[num])
