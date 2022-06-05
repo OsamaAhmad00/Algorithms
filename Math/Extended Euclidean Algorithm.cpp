@@ -4,17 +4,15 @@
 template <typename T>
 struct ExtendedGCDResult
 {
-    T g, x, y;
-
-    // g = x * a + y * b
-    //  where g = GCD(a, b)
+    T GCD, x, y;
+    // GCD = GCD(a, b) = x * a + y * b
 };
 
 template <typename T>
 ExtendedGCDResult<T> extended_GCD_recursive(const T& a, const T& b)
 {
     // Base case:
-    //  if b is 0, then gcd = 1 * a + 0 * b = a.
+    //  if b is 0, then GCD = 1 * a + 0 * b = a.
     if (b == 0)
         return {a, 1, 0};
 
@@ -153,11 +151,11 @@ void test(int a, int b)
 {
     auto result1 = extended_GCD_recursive(a, b);
     auto result2 = extended_GCD_iterative(a, b);
-    if (result1.g != result2.g || result1.x != result2.x || result1.y != result2.y)
+    if (result1.GCD != result2.GCD || result1.x != result2.x || result1.y != result2.y)
         std::cout << "The recursive and the iterative versions don't give the same answers" << std::endl;
-    if (a % result1.g != 0 || b % result1.g != 0)
+    if (a % result1.GCD != 0 || b % result1.GCD != 0)
         std::cout << "GCD is not correct" << std::endl;
-    if (result1.x * a + result1.y * b != result1.g)
+    if (result1.x * a + result1.y * b != result1.GCD)
         std::cout << "x and y are not correct" << std::endl;
 }
 
@@ -166,5 +164,5 @@ int main()
     int n = 1000;
     for (int i = 0; i < n; i++)
         for (int j = 1; j < n; j++)
-            test(i, j);
+            test(i, j), test(i, -j), test(-i, j), test(-i, -j);
 }

@@ -5,26 +5,24 @@
 template <typename T>
 struct ExtendedGCDResult
 {
-    T g, x, y;
-
-    // g = x * a + y * b
-    //  where g = GCD(a, b)
+    T x, y;
+    // GCD(a, b) = x * a + y * b
 };
 
 template <typename T>
 struct MultiExtendedGCDResult
 {
-    T g;
+    T GCD;
     std::vector<T> coefficients;
     // For input x1, x2, ..., xn
-    // g = coefficients[0] * x1 + coefficients[1] * x2 + ... + coefficients[n-1] * xn
-    //  where g = GCD(x1, x2, ..., xn)
+    // GCD = GCD(x1, x2, ... xn)
+    //  = coefficients[0] * x1 + coefficients[1] * x2 + ... + coefficients[n-1] * xn
 };
 
 template <typename T>
 T GCD(T a, T b)
 {
-    while (a > 0) {
+    while (a != 0) {
         b %= a;
         std::swap(a, b);
     }
@@ -45,7 +43,7 @@ ExtendedGCDResult<T> extended_GCD(T a, T b)
         std::tie(y, prev_y) = std::make_tuple(prev_y, y - q * prev_y);
         std::tie(a, b) = std::make_tuple(b, a - q * b);
     }
-    return {a, x, y};
+    return {x, y};
 }
 
 template <typename T>
@@ -89,12 +87,12 @@ void test(const std::vector<int>& numbers)
     int sum = 0;
     for (int i = 0; i < numbers.size(); i++)
         sum += result.coefficients[i] * numbers[i];
-    if (sum != result.g)
+    if (sum != result.GCD)
         std::cout << "The result is not correct" << std::endl;
 
     for (int i = 0; i < numbers.size(); i++)
         std::cout << " + " << result.coefficients[i] << "*" << numbers[i];
-    std::cout << " = " << result.g << std::endl;
+    std::cout << " = " << result.GCD << std::endl;
 }
 
 int main()
@@ -103,4 +101,5 @@ int main()
     test({453, 345, 23, 6, 223, 456, 89});
     test({3, 12, 36, 120, 1400});
     test({4, 12, 36, 120, 1400});
+    test({-4, 12, -36, 120, -1400});
 }

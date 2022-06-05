@@ -9,7 +9,7 @@ T GCD_iterative(T a, T b)
 {
     // if b < a, first
     // iteration will swap only.
-    while (a > 0) {
+    while (a != 0) {
         b %= a;
         std::swap(a, b);
     }
@@ -43,11 +43,35 @@ void test(int a, int b)
 
 int main()
 {
-    test(5, 230);
-    test(33, 390);
-    test(1, 1);
-    test(1, 0);
-    test(0, 1);
-    test(200, 200);
+    test(5   , 230);
+    test(33  , 390);
+    test(1   , 1);
+    test(1   , 0);
+    test(0   , 1);
+    test(200 , 200);
     test(1000, 99);
+
+    test(-5   , 230);
+    test(-33  , 390);
+    test(-1   , 1);
+    test(-1   , 0);
+    test(-0   , 1);
+    test(-200 , 200);
+    test(-1000, 99);
+
+    test(5   , -230);
+    test(33  , -390);
+    test(1   , -1);
+    test(1   , -0);
+    test(0   , -1);
+    test(200 , -200);
+    test(1000, -99);
+
+    test(-5   , -230);
+    test(-33  , -390);
+    test(-1   , -1);
+    test(-1   , -0);
+    test(-0   , -1);
+    test(-200 , -200);
+    test(-1000, -99);
 }
