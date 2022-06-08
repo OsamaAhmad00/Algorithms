@@ -56,6 +56,16 @@ std::vector<T> linear_modular_equation(const T& a, const T& b, const T& n)
      * You might think that if b = 0, the only solution is x = 0, but
      *  Notice that multiplying a with a multiple of n / GCD(a, n)
      *  will set it to 0 (mod n).
+     * Reason of having only GCD(a, n) solutions:
+     *  After turing "ax ≡ b (mod n)" to "ax - ny = b", and solving
+     *  it as a linear Diophantine equation, using Bezout's identity,
+     *  we can see that the values of x will be in the form:
+     *   s + (n / GCD(a, n)) * i, for some solution s, and for i
+     *   in range [-infinity, infinity].
+     *  Since each step is (n / GCD(a, n)), we know that after GCD(a, n)
+     *  steps, we would've added (or subtracted) n, and since we're taking
+     *  the mod, after adding n, the next value will already be in our
+     *  solution set. Thus, we can only have GCD(a, n) unique solutions.
      */
 
     // xa - yn = b
@@ -64,15 +74,58 @@ std::vector<T> linear_modular_equation(const T& a, const T& b, const T& n)
     if (b % answer.GCD != 0)
         return {};
 
+    // xa - yn = b. Here, since b can be a multiple of
+    //  GCD(a, n), and since answer.x is a solution for
+    //  xa - yn = GCD(a, n), we should multiply it  by
+    //  (b / GCD(a, n)) to be a solution for xa - yn = b.
     T base = answer.x * (b / answer.GCD);
+    // Making sure it's positive, and less than n.
     base = (base % n + n) % n;
+
+    // Notice that unlike the base solution, the
+    //  step is not multiplied by (b / GCD(a, n)),
+    //  we keep on adding (n / GCD(a, n)) only.
+    //  Think of the example where a=5, b=10, n=100:
+    //  Solutions for 5x - 100y = 5 (5 is GCD(a, n)) are:
+    //   x = {1, 21, 41, 61, 81}, y = {0, 1, 2, 3, 4}
+    //  Solutions for 5x - 100y = 10 (10 is b) are:
+    //   x = {2, 22, 42, 62, 82}, y = {0, 1, 2, 3, 4}
+    //  Notice that the base got multiplied by 2, which is
+    //   (b / GCD(a, n)), but the step remained the same.
+    //  The reason is that for every step in x (20 in the
+    //   example above), we have a step in y (1 in the example
+    //   above) that can cancel it, and it's not affected by
+    //   the multiplication.
+    T step = std::abs(n / answer.GCD);
+
+    // We take the mod to get the smallest
+    //  solution, then keep on adding a step
+    //  at a time. This has two advantages:
+    //   1 - We don't have to take the mod on each
+    //       iteration when computing the solutions
+    //       since we know that we're starting from
+    //       the smallest number, and that the biggest
+    //       solution won't exceed n, as opposed to
+    //       the case where the base solution is any
+    //       of the solutions.
+    //   2 - The returned result will be sorted
+    //  Intuitively, there is a base solution
+    //  that is either 0 or some number that is
+    //  not divisible by "step", that we'll keep
+    //  adding step to. Note that we're taking
+    //  the absolute value to ensure that the
+    //  solutions are increasing (if step is
+    //  negative, it can be decreasing).
+    base %= step;
 
     auto solutions = std::abs(answer.GCD);
     std::vector<T> result(solutions);
 
-    T step = n / answer.GCD;
-    for (int i = 0; i < solutions; i++)
-        result[i] = (base + i * step) % n;
+    result[0] = base;
+    for (int i = 1; i < solutions; i++) {
+        // We don't have to take % n here.
+        result[i] = result[i - 1] + step;
+    }
 
     return result;
 }
@@ -87,7 +140,11 @@ void test(int a, int b, int n)
         return;
     }
 
-    std::sort(result.begin(), result.end());
+    auto sorted = result;
+    std::sort(sorted.begin(), sorted.end());
+    if (result != sorted)
+        std::cout << "The result is not sorted" << std::endl;
+
     for (int i = 1; i < result.size(); i++) {
         if (result[i - 1] == result[i]) {
             std::cout << "The xs are not unique" << std::endl;
