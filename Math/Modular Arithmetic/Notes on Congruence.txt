@@ -1,0 +1,38 @@
+Facts:
+
+    if ax ≡ ay (mod n), and GCD(a, n) = d, then x ≡ y (mod n/d).
+     As a result of this, if GCD(a, n) = 1 (relatively prime), and
+     ax ≡ ay (mod n), then  x ≡ y (mod n).
+
+    if a ≡ b (mod m), a^n = b^n for n >= 1.
+
+    if p is prime, (x + y)^p ≡ x^p + y^p (mod p).
+
+    if a ≡ b (mod m), and b ≡ c (mod m), then a ≡ c (mod m).
+
+    if a ≡ b (mod m), and c ≡ d (mod m), then a +/- c ≡ b +/- d (mod m).
+
+    if a ≡ b (mod m), and c ≡ d (mod m), then ac ≡ bd (mod m).
+
+    if a ≡ b (mod m), then a + c ≡ b + c (mod m).
+
+    if a ≡ b (mod m), then ac ≡ bc (mod m).
+
+    Fermat's Little Theorem: if p is prime and a is not divisible by p,
+     then a^(p - 1) ≡ 1 (mod p).
+
+    Euler's Theorem: if GCD(a, n) = 1, then a^φ(n) ≡ 1 (mod n)
+     where φ is Euler's totient function.
+
+
+Tricks:
+
+    Find 3^5555 % 80:
+     If you can observe that 3^4 % 80 = 1, you can represent
+     3^5555 in terms of 3^4 as follows:
+      3^5555 = 3^(4 * 1388 + 3) = 3^(4 * 1388) * 3^3 = 1 * 27 = 27.
+
+    Find 3^1000 % 28:
+     If you can observe that 3^3 = 27 = -1 (mod 28), you can
+     represent 3^1000 in terms of 3^3 as follows:
+      3^1000 = 3^(3 * 333 + 1) = 3^(3 * 333) + 3^1 = -1^333 + 3 = 0.
