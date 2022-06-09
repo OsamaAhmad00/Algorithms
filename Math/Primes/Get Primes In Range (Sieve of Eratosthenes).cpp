@@ -2,6 +2,19 @@
 #include <cmath>
 #include <vector>
 
+template <typename T>
+bool is_prime(const T& number)
+{
+    if (number != 2 && number % 2 == 0)
+        return false;
+
+    T s = std::sqrt(std::abs(number));
+    for (T i = 3; i <= s; i+=2)
+        if (number % i == 0)
+            return false;
+    return true;
+}
+
 void add_all_multiples_of(size_t num, std::vector<bool>& is_prime)
 {
     // is_prime[num] = true, is_prime[num * x] = false for any x > 1.
@@ -43,8 +56,18 @@ void test(size_t upperbound, size_t lowerbound = 2)
     std::cout << std::endl;
 }
 
+void test_mask(size_t upperbound)
+{
+    auto mask = get_primes_in_range_mask(upperbound);
+    for (size_t i = 2; i <= upperbound; i++) {
+        if (is_prime(i) != mask[i])
+            std::cout << "Result is not correct" << std::endl;
+    }
+}
+
 int main()
 {
+    test_mask(1000000);
     test(1000);
     test(2000, 1980);
     test(10);
