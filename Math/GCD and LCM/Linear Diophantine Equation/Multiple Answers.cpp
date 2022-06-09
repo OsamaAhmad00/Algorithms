@@ -18,14 +18,6 @@ struct ExtendedGCDResult
 };
 
 template <typename T>
-struct BezoutsIdentityResult
-{
-    T GCD;
-    std::vector<T> xs;
-    std::vector<T> ys;
-};
-
-template <typename T>
 struct LinearDiophantineResult
 {
     bool has_solutions = true;
@@ -51,71 +43,51 @@ ExtendedGCDResult<T> extended_GCD(T a, T b)
 }
 
 template <typename T>
-BezoutsIdentityResult<T> bezouts_identity(const T& a, const T& b, const Range& range)
-{
-    /*
-     * GCD = x * a + y * b
-     * Notice that for some number k, if we add b/k to x,
-     * and subtract a/k from y, the equation won't change.
-     *  Proof: (x + b/k) * a + (y - a/k) * b
-     *         = x * a + ab/k + y * b - ab/k
-     *         = x * a + y * b
-     * Note that you can subtract from x instead of adding,
-     *  but you'll have to add to y. If you want to do so,
-     *  swapping the arguments a and b will do the job.
-     * Note that to have an integer x and y, the smallest
-     *  k = GCD(a, b).
-     * If you want multiple answers, you can just keep adding
-     *  or subtracting multiples of the GCD.
-     */
-    auto answer = extended_GCD(a, b);
-
-    auto n = range.size();
-
-    BezoutsIdentityResult<T> result {
-            answer.GCD,
-            std::vector<T>(n),
-            std::vector<T>(n)
-    };
-
-    const T dx = b / answer.GCD;
-    const T dy = a / answer.GCD;
-
-    auto k = range.start;
-    for (int i = 0; i < n; i++) {
-        result.xs[i] = answer.x + dx * k;
-        result.ys[i] = answer.y - dy * k;
-    }
-
-    return result;
-}
-
-template <typename T>
-BezoutsIdentityResult<T> bezouts_identity(const T& a, const T& b, size_t answers_count)
-{
-    return bezouts_identity(a, b, {0, answers_count - 1});
-}
-
-template <typename T>
 LinearDiophantineResult<T> linear_diophantine_equation(const T& a, const T& b, const T& c, const Range& range)
 {
-    auto answer = bezouts_identity(a, b, range);
+    auto answer = extended_GCD(a, b);
 
     if (c % answer.GCD != 0)
         return {false};
 
+    auto n = range.size();
     LinearDiophantineResult<T> result {
         true,
-        std::move(answer.xs),
-        std::move(answer.ys)
+        std::vector<T>(n),
+        std::vector<T>(n)
     };
 
+    // We're using Bezout's identity here.
+    // Let's take a look at dx. dy is the same.
+    // Notice that unlike the base solution,
+    //  dx is not multiplied by (c / GCD(a, b)),
+    //  we keep on adding (b / GCD(a, b)) only.
+    //  Think of the example where a=5, b=100, c=10:
+    //  5 consecutive solutions for 5x - 100y = 5 (5 is GCD(a, b)) are:
+    //   x = {1, 21, 41, 61, 81}, y = {0, 1, 2, 3, 4}
+    //  5 consecutive solutions for 5x - 100y = 10 (10 is c) are:
+    //   x = {2, 22, 42, 62, 82}, y = {0, 1, 2, 3, 4}
+    //  Notice that the base got multiplied by 2, which is
+    //   (c / GCD(a, b)), but dx remained the same.
+    //  The reason is that for every step in x (20 in the
+    //   example above), we have a step in y (1 in the example
+    //   above) that can cancel it, and it's not affected by
+    //   the multiplication.
+    auto dy         = a / answer.GCD;
+    auto dx         = b / answer.GCD;
     auto multiplier = c / answer.GCD;
 
-    auto n = range.size();
-    for (size_t i = 0; i < n; i++) {
-        result.xs[i] *= multiplier;
-        result.ys[i] *= multiplier;
+    // Base solutions that we'll keep adding
+    //  dx and subtracting dy from.
+    // We add dx * range.start to the base answer
+    //  before multiplying. At the end of the loop,
+    //  the last element would have had dx * range.end
+    //  added to it. Same goes for dy.
+    result.xs[0] = (answer.x + dx * range.start) * multiplier;
+    result.ys[0] = (answer.y - dy * range.start) * multiplier;
+    for (size_t i = 1; i < n; i++) {
+        result.xs[i] = result.xs[i - 1] + dx;
+        result.ys[i] = result.ys[i - 1] - dy;
     }
 
     return result;
