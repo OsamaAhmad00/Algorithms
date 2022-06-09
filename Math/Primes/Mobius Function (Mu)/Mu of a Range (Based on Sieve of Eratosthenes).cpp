@@ -64,7 +64,8 @@ std::vector<T> mu_range(size_t upperbound)
     std::vector<T> result(upperbound + 1, 1);
     std::vector<bool> is_prime(upperbound + 1, true);
 
-    process_all_multiples_of_prime(2, result, is_prime);
+    if (upperbound >= 2)
+        process_all_multiples_of_prime(2, result, is_prime);
 
     // Notice that unlike the algorithm for prime factorization,
     //  we iterate up to the upperbound, not up to sqrt(upperbound).

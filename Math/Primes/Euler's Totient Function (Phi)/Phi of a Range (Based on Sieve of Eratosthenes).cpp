@@ -40,7 +40,8 @@ std::vector<T> phi_range(size_t upperbound)
     std::vector<T> result(upperbound + 1, 1);
     result[0] = result[1] = 0;
 
-    process_all_multiples_of_prime(2, result);
+    if (upperbound >= 2)
+        process_all_multiples_of_prime(2, result);
 
     // Notice that unlike the algorithm for prime factorization,
     //  we iterate up to the upperbound, not up to sqrt(upperbound).
