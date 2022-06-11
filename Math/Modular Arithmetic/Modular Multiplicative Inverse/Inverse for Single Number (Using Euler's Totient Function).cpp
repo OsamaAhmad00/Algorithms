@@ -23,11 +23,7 @@ T fast_mod_power(T number, U power, V mod)
         power /= 2;
     }
 
-    // Returns 1 for 0^0 % 1 which is not correct.
-    //  You can take the mode when returning the
-    //  answer, but it's not worth it since you'll
-    //  never use this function to compute 0^0 % 1.
-    return result;
+    return (result + mod) % mod;
 }
 
 template <typename T>
