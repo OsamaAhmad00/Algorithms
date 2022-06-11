@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 
 template <typename T>
 T GCD(T a, T b)
@@ -57,6 +58,19 @@ T phi(T number)
 }
 
 template <typename T>
+bool is_prime(const T& number)
+{
+    if (number != 2 && number % 2 == 0)
+        return false;
+
+    T s = std::sqrt(std::abs(number));
+    for (T i = 3; i <= s; i+=2)
+        if (number % i == 0)
+            return false;
+    return true;
+}
+
+template <typename T>
 T reduced_fast_mod_power(const T& number, const T& power, const T& mod)
 {
     /*
@@ -67,14 +81,17 @@ T reduced_fast_mod_power(const T& number, const T& power, const T& mod)
      * Euler's Theorem:
      *  If GCD(a, n) = 1, then a^Phi(n) ≡ 1 (mod n) where
      *  Phi is Euler's Totient Function.
-     * Notice that Phi(p) = p - 1 if p is a prime number.
-     *  This means that if the mod is a prime number,
-     *  a^(p - 1) ≡ 1 (mod n).
      *
+     * Notice that Phi(n) = n - 1 if n is a prime number.
+     *  This means that if the mod is a prime number,
+     *  a^(n - 1) ≡ 1 (mod n).
+     *
+     * Let x = Phi(power).
      * Claim: We can reduce a^p to a^(p % x).
      * Proof:
-     *  Let x = Phi(power). We can represent a^p % n as
-     *  a^((p/x * x) + p%x) = a^(p/x * x) * a^(p % x)
+     *  We can represent a^p % n as:
+     *    a^((p/x * x) + p%x)
+     *  = a^(p/x * x) * a^(p % x)
      *  = 1 * a^(p % x) = a^(p % x).
      *
      * NOTICE THAT PHI(0) = PHI(1) = 0, THUS, THE MODS
@@ -87,6 +104,44 @@ T reduced_fast_mod_power(const T& number, const T& power, const T& mod)
     return fast_mod_power(number, power % phi(mod), mod);
 }
 
+template <typename T>
+T reduced_fast_mod_power_prime(const T& number, const T& power, const T& mod)
+{
+    /*
+     * Returns 0 if GCD(number, mod) != 1.
+     *
+     * This function assumes that the mod is a prime number.
+     *
+     * Let a = number, p = power, n = mod.
+     *
+     * Euler's Theorem:
+     *  If GCD(a, n) = 1, then a^Phi(n) ≡ 1 (mod n) where
+     *  Phi is Euler's Totient Function.
+     *
+     * Notice that Phi(n) = n - 1 if n is a prime number.
+     *  This means that if the mod is a prime number,
+     *  a^(n - 1) ≡ 1 (mod n).
+     *
+     * Let x = Phi(power).
+     * Claim: We can reduce a^p to a^(p % x).
+     * Proof:
+     *  We can represent a^p % n as:
+     *    a^((p/x * x) + p%x)
+     *  = a^(p/x * x) * a^(p % x)
+     *  = 1 * a^(p % x) = a^(p % x).
+     *
+     * Since we know that the mod is prime, we don't need to call the
+     *  Phi function. The result is equal to a^(p % (n - 1)) % n.
+     *
+     * NOTICE THAT PHI(0) = PHI(1) = 0, ALSO, NOTICE THAT WE TAKE % (MOD - 1)
+     *  THUS, THE MODS MUST BE >= 2 TO AVOID DIVISION BY 0 EXCEPTION.
+     */
+
+    if (std::abs(GCD(number, mod)) != 1)
+        return 0;
+
+    return fast_mod_power(number, power % (mod - 1), mod);
+}
 
 void test(int number, int power, int mod)
 {
@@ -102,6 +157,12 @@ void test(int number, int power, int mod)
 
     if (number != 0 && result1 != result2)
         std::cout << "The result is not correct" << std::endl;
+
+    if (is_prime(mod)) {
+        int result3 = reduced_fast_mod_power_prime(number, power, mod);
+        if (result3 != result1)
+            std::cout << "The version for the prime mod is not correct" << std::endl;
+    }
 }
 
 int main()
