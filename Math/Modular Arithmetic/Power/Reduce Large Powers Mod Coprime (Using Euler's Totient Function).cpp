@@ -42,7 +42,8 @@ T phi_prime_in_number(T& number, const T& prime)
 template <typename T>
 T phi(T number)
 {
-    T result = (number > 1);
+    // Phi(1) is defined to be 1.
+    T result = (number >= 1);
 
     if (number % 2 == 0)
         result *= phi_prime_in_number(number, 2);

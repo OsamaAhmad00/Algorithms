@@ -62,7 +62,8 @@ T phi(T number)
      *     where D(n) = number of divisors of n.
      */
 
-    T result = (number > 1);
+    // Phi(1) is defined to be 1.
+    T result = (number >= 1);
 
     if (number % 2 == 0)
         result *= phi_prime_in_number(number, 2);
