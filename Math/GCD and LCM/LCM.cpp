@@ -5,7 +5,7 @@
 // = x1^min(a, d) * x2^min(b, e) * ... * xn^min(c, f)
 
 template <typename T>
-T GCD_iterative(T a, T b)
+T GCD(T a, T b)
 {
     // if b < a, first
     // iteration will swap only.
@@ -33,7 +33,9 @@ T LCM(const T& a, const T& b)
     //  of the two numbers) will subtract the minimum
     //  power, leaving the primes raised to the maximum
     //  power of the primes of the two numbers.
-    return (a * b) / GCD_iterative(a, b);
+    // It's computed this way to lower the chance of an
+    //  overflow happening.
+    return (a / GCD(a, b)) * b;
 }
 
 void test(int a, int b)
