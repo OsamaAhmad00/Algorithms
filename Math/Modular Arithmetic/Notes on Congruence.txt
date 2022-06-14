@@ -2,7 +2,20 @@ Facts:
 
     if ax ≡ ay (mod n), and GCD(a, n) = d, then x ≡ y (mod n/d).
      As a result of this, if GCD(a, n) = 1 (relatively prime), and
-     ax ≡ ay (mod n), then  x ≡ y (mod n).
+     ax ≡ ay (mod n), then x ≡ y (mod n), and means that a has a
+     modular multiplicative inverse mod n.
+
+    if a ≡ b (mod n), and a ≡ b (mod m) if and only if a ≡ b (mod LCM(n, m)).
+     In other words, n,m ∣ a−b ⟺ LCM(n,m) ∣ a−b.
+     Intuitively, if n divides a-b, then a-b is a multiple of n. Same goes for
+     m, if m divides a-b, then a-b is a multiple of m. This means that a-b is
+     a multiple of LCM(n, m).
+     It can be shown the other way. if LCM(n, m) divides a-b, then any factor
+     of it will divide as well.
+
+    ca % cb = c(a % b).
+
+    if a ≡ b (mod m), ca ≡ cb (mod cm).
 
     if a ≡ b (mod m), a^n = b^n for n >= 1.
 
@@ -18,11 +31,12 @@ Facts:
 
     if a ≡ b (mod m), then ac ≡ bc (mod m).
 
-    Fermat's Little Theorem: if p is prime and a is not divisible by p,
-     then a^(p - 1) ≡ 1 (mod p).
-
     Euler's Theorem: if GCD(a, n) = 1, then a^φ(n) ≡ 1 (mod n)
      where φ is Euler's totient function.
+
+    Fermat's Little Theorem: if p is prime and a is not divisible by p,
+     then a^(p - 1) ≡ 1 (mod p). Notice that Euler's theorem is a
+     generalization of this theorem (since φ(p) = p - 1).
 
 
 Tricks:
@@ -31,6 +45,8 @@ Tricks:
      If you can observe that 3^4 % 80 = 1, you can represent
      3^5555 in terms of 3^4 as follows:
       3^5555 = 3^(4 * 1388 + 3) = 3^(4 * 1388) * 3^3 = 1 * 27 = 27.
+     You can use Euler's theorem here to find the power that when
+      raised to, under some mod, results in 1.
 
     Find 3^1000 % 28:
      If you can observe that 3^3 = 27 = -1 (mod 28), you can
