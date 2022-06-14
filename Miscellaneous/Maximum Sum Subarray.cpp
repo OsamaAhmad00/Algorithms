@@ -13,7 +13,7 @@ struct Range
 template <typename T>
 Range<T> get_max_sum(const std::vector<T>& array)
 {
-    Range<T> result = {array[0], 0, 0};
+    Range<T> result = {0, 0, array[0]};
     Range<T> current = {0, 0, 0};
 
     for (int i = 0; i < array.size(); i++)
