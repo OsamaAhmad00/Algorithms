@@ -166,27 +166,32 @@ SystemOfCongruencesResult<T> solve(const SystemOfCongruences<T>& system)
      *
      *  The smallest positive integer will be this solution % LCM, giving the same effect as subtracting
      *   as many LCMs as possible.
+     *  Knowing that one solution is < the LCM, if you don't remember the details of this algorithm, you
+     *   can try all number only up to the LCM, and if there is no solution, then the system is not solvable,
+     *   otherwise, the solution set = {the found solution +/- k*LCM}.
      */
 
     size_t n = system.size();
     SystemOfCongruencesResult<T> result{true, 0, 1};
 
     // Since the mods are pairwise coprime, the LCM = their product.
-    for (int i = 0; i < n; i++)
+    for (size_t i = 0; i < n; i++)
         result.LCM *= system.mods[i];
     T& product = result.LCM;
 
-    for (int i = 0; i < n; i++)
+    for (size_t i = 0; i < n; i++)
     {
         T m = system.mods[i];
         T x = system.remainders[i];
         T y = product / m;
-        T z = mod_multiplicative_inverse(y, m);
+        T z = mod_multiplicative_inverse(y % m, m);
 
-        if (z == 0) return {false};
+        if (z == 0)
+            return {false};
 
         // An overflow can happen here too.
-        result.solution += x * y * z;
+        result.solution += (((x * y) % result.LCM) * z) % result.LCM;
+        result.solution %= result.LCM;
     }
 
     result.solution = (result.solution + result.LCM) % result.LCM;
@@ -194,25 +199,25 @@ SystemOfCongruencesResult<T> solve(const SystemOfCongruences<T>& system)
     return result;
 }
 
-void test(const SystemOfCongruences<int>& system)
+void test(const SystemOfCongruences<long long>& system)
 {
     auto result = solve(system);
 
-    if (!all_pairwise_coprime(system))
-    {
-        if (result.has_solution)
-            std::cout << "Wrong conclusion" << std::endl;
-
+    if (!all_pairwise_coprime(system)) {
         std::cout << "Since the mods are not pairwise coprime, ";
         std::cout << "the function will return a wrong result" << std::endl;
     }
 
+    if (result.has_solution != is_solvable(system))
+        std::cout << "Wrong conclusion" << std::endl;
+
     for (int i = 0; i < system.size(); i++) {
         if (result.solution % system.mods[i] != system.remainders[i]) {
             std::cout << "Wrong result" << std::endl;
-            return;
         }
     }
+
+    std::cout << std::endl;
 }
 
 int main()
@@ -222,5 +227,5 @@ int main()
 
     // Wrong results
     test({{2, 3, 4}, {1, 2, 3}}); // not pairwise coprime
-    test({{1024, 59049, 9765625}, {123, 2323, 23421}}); // overflow
+    test({{1024, 59049, 390625, 16807}, {123, 2323, 23421, 2000}}); // overflow
 }
