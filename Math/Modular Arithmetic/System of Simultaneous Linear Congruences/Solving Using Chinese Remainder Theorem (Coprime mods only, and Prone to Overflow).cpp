@@ -82,11 +82,50 @@ bool all_pairwise_coprime(const SystemOfCongruences<T>& system)
 template <typename T>
 bool is_solvable(const SystemOfCongruences<T>& system)
 {
-    // The system is solvable in two conditions:
-    //  1 - if all mods are relatively coprime
-    //  or
-    //  2 - if for every i, and j, remainders[i] ≡
-    //      remainders[j] (mod GCD(mods[i], mods[j]))
+    /*
+     * A system is solvable in two conditions:
+     *  1 - if all mods are relatively coprime
+     *  or
+     *  2 - if for every i, and j, remainders[i] ≡
+     *      remainders[j] (mod GCD(mods[i], mods[j]))
+     *      The reason for this is that if mods[i] and mods[j]
+     *      are not coprimes, you can split the 2 congruences
+     *      into 4 congruences with solutions that are a superset
+     *      of the solutions for the 2 congruences.
+     *      Suppose the two congruences are:
+     *       x ≡ r1 (mod m1)
+     *       x ≡ r2 (mod m2)
+     *       d = GCD(m1, m2) != 1
+     *      This can be broken down to these 4 congruences:
+     *       x ≡ r1 % (m1/d) (mod m1/d)
+     *       x ≡ r2 % (m2/d) (mod m2/d)
+     *       x ≡ r1 % d      (mod d)
+     *       x ≡ r2 % d      (mod d)
+     *      Notice the last 2 congruences. This implies that
+     *       r1 % GCD(m1, m2) must equal r2 % GCD(m1, m2) for
+     *       the system to have a solution.
+     *      Note that these 3 resulting congruences (last 2 are the same)
+     *       don't have to have coprime mods. Suppose:
+     *        m1 = i*i*i, m2 = i*j => GCD = i
+     *       Notice that the 3 mods are {(i*i*i)/GCD, (i*j)/GCD, GCD}
+     *        = {i*i, j, i} which are not coprimes.
+     *      Also note that the solutions for these 3 congruences
+     *       are a superset of the solutions for the original 2
+     *       congruences.
+     *       Example:
+     *        Original congruences:
+     *         x = 3 (mod 9)
+     *         x = 18 (mod 30)
+     *         x = 178 (mod 200)
+     *         Solution = {1578 +/- k * 1800}
+     *        The unique congruences after breaking the original ones:
+     *         x = 0 (mod 2)
+     *         x = 0 (mod 3)
+     *         x = 3 (mod 5)
+     *         Solution = {18 +/- k * 30}
+     *        Clearly, the solutions of the later system of congruences
+     *         are a superset of the solutions of other system of congruences.
+     */
 
     if (all_pairwise_coprime(system))
         return true;
